@@ -1,0 +1,2 @@
+- [Orval hooks: dependent query queryKey](orval-dependent-query-key.md) — passing `query.enabled` alone to a generated `useX` hook fails typecheck; must also pass explicit `queryKey` via `getXQueryKey(params)`.
+- [Nested anchor tags with wouter Link](nested-anchor-hydration.md) — card components with an outer `<Link>` and an inner `asChild` external `<a>` cause hydration errors; use a clickable div + `useLocation().navigate` instead.
