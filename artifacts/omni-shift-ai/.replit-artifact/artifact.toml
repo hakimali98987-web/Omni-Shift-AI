@@ -5,10 +5,6 @@ version = "1.0.0"
 id = "artifacts/omni-shift-ai"
 router = "path"
 
-[[integratedSkills]]
-name = "react-vite"
-version = "1.0.0"
-
 [[services]]
 name = "web"
 paths = [ "/" ]
@@ -19,8 +15,8 @@ run = "pnpm --filter @workspace/omni-shift-ai run dev"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/omni-shift-ai", "run", "build" ]
-publicDir = "artifacts/omni-shift-ai/dist/public"
 serve = "static"
+publicDir = "artifacts/omni-shift-ai/dist/public"
 
 [[services.production.rewrites]]
 from = "/*"
