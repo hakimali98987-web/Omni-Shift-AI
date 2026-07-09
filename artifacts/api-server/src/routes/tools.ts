@@ -73,10 +73,12 @@ router.get("/tools", async (req, res): Promise<void> => {
 
   const conditions = [];
   if (search) {
+    const term = `%${search}%`;
     conditions.push(
       or(
-        ilike(toolsTable.name, `%${search}%`),
-        ilike(toolsTable.description, `%${search}%`),
+        ilike(toolsTable.name, term),
+        ilike(categoriesTable.name, term),
+        sql`EXISTS (SELECT 1 FROM unnest(${toolsTable.tags}) AS tag WHERE tag ILIKE ${term})`,
       ),
     );
   }

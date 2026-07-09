@@ -57,7 +57,7 @@ paths:
           required: false
           schema:
             type: string
-          description: Full-text search across tool name and description
+          description: Search across tool name, category name, and tags
         - name: category
           in: query
           required: false

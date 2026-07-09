@@ -45,7 +45,7 @@ export const listToolsQueryLimitMax = 100;
 
 
 export const ListToolsQueryParams = zod.object({
-  "search": zod.coerce.string().optional().describe('Full-text search across tool name and description'),
+  "search": zod.coerce.string().optional().describe('Search across tool name, category name, and tags'),
   "category": zod.coerce.string().optional().describe('Filter by category slug'),
   "pricing": zod.enum(['Free', 'Freemium', 'Paid']).optional().describe('Filter by pricing type'),
   "sort": zod.enum(['popular', 'newest', 'name']).default(listToolsQuerySortDefault),

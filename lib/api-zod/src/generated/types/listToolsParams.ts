@@ -10,7 +10,7 @@ import type { PricingType } from './pricingType';
 
 export type ListToolsParams = {
 /**
- * Full-text search across tool name and description
+ * Search across tool name, category name, and tags
  */
 search?: string;
 /**

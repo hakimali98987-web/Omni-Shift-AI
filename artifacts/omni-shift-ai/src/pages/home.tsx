@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   useListCategories,
@@ -56,11 +56,22 @@ export default function Home() {
   const [sort, setSort] = useState<"popular" | "newest" | "name">("popular");
   const [page, setPage] = useState(1);
 
+  // Debounce the raw input so results update instantly while typing
+  // without firing a request on every keystroke.
+  const isDebouncing = searchInput !== search;
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [searchInput]);
+
   const { data: categories, isLoading: categoriesLoading } = useListCategories();
   const { data: featured, isLoading: featuredLoading } = useListFeaturedTools();
   const { data: stats } = useGetDirectoryStats();
 
-  const { data: toolsData, isLoading: toolsLoading } = useListTools({
+  const { data: toolsData, isLoading: toolsLoading, isFetching: toolsFetching } = useListTools({
     search: search || undefined,
     category,
     pricing,
@@ -75,6 +86,8 @@ export default function Home() {
   }, [toolsData]);
 
   function handleSearchSubmit(e: React.FormEvent) {
+    // Results already update live as the user types (debounced above);
+    // submitting just applies immediately, e.g. on Enter.
     e.preventDefault();
     setSearch(searchInput);
     setPage(1);
@@ -149,9 +162,16 @@ export default function Home() {
               <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search ChatGPT, Midjourney, video editors, coding assistants…"
+                placeholder="Search by tool name, category, or tag…"
                 className="flex-1 h-14 pl-14 pr-4 text-base border-0 shadow-none focus-visible:ring-0 bg-transparent placeholder:text-muted-foreground/60"
               />
+              {(isDebouncing || toolsFetching) && searchInput && (
+                <span
+                  className="absolute right-[6.5rem] h-4 w-4 shrink-0 rounded-full border-2 border-violet-300 border-t-violet-600 animate-spin"
+                  role="status"
+                  aria-label="Searching"
+                />
+              )}
               <div className="pr-2 shrink-0">
                 <Button
                   type="submit"
@@ -375,7 +395,7 @@ export default function Home() {
           <div className="text-center py-24 text-muted-foreground">
             <Search className="w-10 h-10 mx-auto mb-4 opacity-30" />
             <p className="font-medium text-lg mb-1">No tools found</p>
-            <p className="text-sm">Try a different search term or category.</p>
+            <p className="text-sm">Try a different tool name, category, or tag.</p>
           </div>
         )}
 
