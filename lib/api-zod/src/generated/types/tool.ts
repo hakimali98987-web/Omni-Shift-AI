@@ -22,4 +22,6 @@ export interface Tool {
   featured: boolean;
   rating: number;
   tags: string[];
+  /** @nullable */
+  launchYear?: number | null;
 }

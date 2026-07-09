@@ -25,6 +25,7 @@ const toolSelection = {
   featured: toolsTable.featured,
   rating: toolsTable.rating,
   tags: toolsTable.tags,
+  launchYear: toolsTable.launchYear,
   createdAt: toolsTable.createdAt,
 };
 

@@ -73,6 +73,9 @@ export function ToolCard({ tool }: { tool: Tool }) {
               {tool.rating.toFixed(1)}
             </div>
           )}
+          {tool.launchYear && (
+            <span className="text-xs text-muted-foreground shrink-0">{tool.launchYear}</span>
+          )}
         </div>
 
         <Button

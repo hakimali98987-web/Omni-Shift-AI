@@ -67,7 +67,8 @@ export const ListToolsResponse = zod.object({
   "pricing": zod.enum(['Free', 'Freemium', 'Paid']),
   "featured": zod.boolean(),
   "rating": zod.number(),
-  "tags": zod.array(zod.string())
+  "tags": zod.array(zod.string()),
+  "launchYear": zod.number().nullish()
 })),
   "total": zod.number(),
   "page": zod.number(),
@@ -92,7 +93,8 @@ export const ListFeaturedToolsResponseItem = zod.object({
   "pricing": zod.enum(['Free', 'Freemium', 'Paid']),
   "featured": zod.boolean(),
   "rating": zod.number(),
-  "tags": zod.array(zod.string())
+  "tags": zod.array(zod.string()),
+  "launchYear": zod.number().nullish()
 })
 export const ListFeaturedToolsResponse = zod.array(ListFeaturedToolsResponseItem)
 
@@ -117,7 +119,8 @@ export const GetToolResponse = zod.object({
   "pricing": zod.enum(['Free', 'Freemium', 'Paid']),
   "featured": zod.boolean(),
   "rating": zod.number(),
-  "tags": zod.array(zod.string())
+  "tags": zod.array(zod.string()),
+  "launchYear": zod.number().nullish()
 })
 
 

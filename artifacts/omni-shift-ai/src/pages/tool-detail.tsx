@@ -117,10 +117,13 @@ export default function ToolDetail() {
                 </Badge>
               </Link>
               {tool.rating > 0 && (
-                <div className="flex items-center text-sm font-medium text-amber-500">
+                <div className="flex items-center text-sm font-medium text-amber-600 dark:text-amber-400">
                   <Star className="w-4 h-4 fill-current mr-1" />
                   {tool.rating.toFixed(1)}
                 </div>
+              )}
+              {tool.launchYear && (
+                <span className="text-sm text-muted-foreground">Launched {tool.launchYear}</span>
               )}
             </div>
           </div>

@@ -231,6 +231,8 @@ components:
           type: array
           items:
             type: string
+        launchYear:
+          type: ["integer", "null"]
     ToolListResult:
       type: object
       required: [items, total, page, limit]
