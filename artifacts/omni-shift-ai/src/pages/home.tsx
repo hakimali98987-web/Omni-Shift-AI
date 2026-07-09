@@ -71,6 +71,12 @@ export default function Home() {
   const { data: featured, isLoading: featuredLoading } = useListFeaturedTools();
   const { data: stats } = useGetDirectoryStats();
 
+  const { data: trendingData, isLoading: trendingLoading } = useListTools({
+    sort: "popular",
+    limit: 8,
+    page: 1,
+  });
+
   const { data: toolsData, isLoading: toolsLoading, isFetching: toolsFetching } = useListTools({
     search: search || undefined,
     category,
@@ -284,32 +290,103 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Featured ── */}
-      {(featuredLoading || (featured && featured.length > 0)) && (
-        <section className="bg-muted/30 border-y border-border/40 py-16 md:py-20">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-2">
-                  Editor's picks
-                </p>
-                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                  Featured tools
-                </h2>
-              </div>
+      {/* ── Featured AI Tools ── */}
+      <section className="bg-muted/30 border-y border-border/40 py-16 md:py-20">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-widest mb-2">
+                Editor's picks
+              </p>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                Featured AI Tools
+              </h2>
+              <p className="text-muted-foreground mt-2 max-w-md">
+                Hand-picked tools that represent the best of what AI has to offer — tried, tested, and loved.
+              </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {featuredLoading &&
-                Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-60 rounded-2xl" />
-                ))}
-              {featured?.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} />
-              ))}
-            </div>
+            <button
+              onClick={() =>
+                document
+                  .getElementById("tools-grid")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="hidden md:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View All <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-        </section>
-      )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredLoading &&
+              Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-60 rounded-2xl" />
+              ))}
+            {featured?.slice(0, 8).map((tool) => (
+              <ToolCard key={tool.id} tool={tool} />
+            ))}
+          </div>
+          <div className="mt-8 flex justify-center md:hidden">
+            <button
+              onClick={() =>
+                document
+                  .getElementById("tools-grid")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View All <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Trending AI Tools ── */}
+      <section className="container mx-auto px-4 md:px-6 py-16 md:py-20">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-2">
+              What's hot right now
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Trending AI Tools
+            </h2>
+            <p className="text-muted-foreground mt-2 max-w-md">
+              The most popular tools people are using right now — sorted by community ratings and popularity.
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              document
+                .getElementById("tools-grid")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View All <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {trendingLoading &&
+            Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="h-60 rounded-2xl" />
+            ))}
+          {trendingData?.items.slice(0, 8).map((tool) => (
+            <ToolCard key={tool.id} tool={tool} />
+          ))}
+        </div>
+        <div className="mt-8 flex justify-center md:hidden">
+          <button
+            onClick={() =>
+              document
+                .getElementById("tools-grid")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View All <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </section>
 
       {/* ── All tools grid ── */}
       <section
