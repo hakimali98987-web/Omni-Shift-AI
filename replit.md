@@ -9,7 +9,8 @@ A modern AI tools directory — browse, search, and compare AI apps by category 
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/scripts run seed` — seed/refresh categories & tools (idempotent upsert, safe to rerun)
+- Required env: `DATABASE_URL` — Postgres connection string (provisioned automatically by Replit's built-in Postgres)
 
 ## Stack
 
