@@ -1,2 +1,3 @@
 - [Orval hooks: dependent query queryKey](orval-dependent-query-key.md) — passing `query.enabled` alone to a generated `useX` hook fails typecheck; must also pass explicit `queryKey` via `getXQueryKey(params)`.
+- [Next.js + ESM workspace packages](nextjs-workspace-esm-migration.md) — workspace packages with `"type":"module"` and `.ts` exports crash webpack SSR; use `ssr:false` dynamic imports in client wrapper files.
 - [Nested anchor tags with wouter Link](nested-anchor-hydration.md) — card components with an outer `<Link>` and an inner `asChild` external `<a>` cause hydration errors; use a clickable div + `useLocation().navigate` instead.

@@ -1,4 +1,6 @@
-import { Link } from "wouter";
+'use client';
+
+import Link from "next/link";
 import { Zap, Mail, Twitter, Github, ArrowUpRight } from "lucide-react";
 import { useListCategories } from "@workspace/api-client-react";
 
@@ -76,7 +78,7 @@ export function Footer() {
               {(categories ?? []).slice(0, 8).map((cat) => (
                 <li key={cat.slug}>
                   <Link
-                    href={`/category/${cat.slug}`}
+                    href={`/categories/${cat.slug}`}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
                   >
                     {cat.name}

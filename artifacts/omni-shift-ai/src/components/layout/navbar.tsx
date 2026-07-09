@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun, Menu, X, Zap } from "lucide-react";
@@ -21,7 +24,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const { setTheme } = useTheme();
-  const [location] = useLocation();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -41,7 +44,7 @@ export function Navbar() {
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
-              const active = location === link.href;
+              const active = pathname === link.href;
               return (
                 <Link
                   key={link.href}
@@ -101,7 +104,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-border/40 bg-background/98 px-4 py-4 flex flex-col gap-1">
           {NAV_LINKS.map((link) => {
-            const active = location === link.href;
+            const active = pathname === link.href;
             return (
               <Link
                 key={link.href}

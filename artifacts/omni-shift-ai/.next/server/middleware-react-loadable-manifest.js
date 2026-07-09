@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"app/_home-view.tsx -> @/views/home\":{\"id\":\"app/_home-view.tsx -> @/views/home\",\"files\":[\"static/chunks/_app-pages-browser_src_views_home_tsx.js\"]}}"

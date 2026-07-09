@@ -1,5 +1,7 @@
+'use client';
+
 import { useState } from "react";
-import { Link } from "wouter";
+import Link from "next/link";
 import { Tool } from "@workspace/api-client-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
