@@ -14,7 +14,15 @@ import Home from "@/pages/home";
 import ToolDetail from "@/pages/tool-detail";
 import CategoryDetail from "@/pages/category-detail";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Avoid long retry backoff on expected 404s (e.g. unknown tool slugs)
+      // so error/not-found states render promptly instead of spinning.
+      retry: false,
+    },
+  },
+});
 
 function Router() {
   return (

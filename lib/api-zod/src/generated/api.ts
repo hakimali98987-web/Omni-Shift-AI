@@ -68,7 +68,10 @@ export const ListToolsResponse = zod.object({
   "featured": zod.boolean(),
   "rating": zod.number(),
   "tags": zod.array(zod.string()),
-  "launchYear": zod.number().nullish()
+  "launchYear": zod.number().nullish(),
+  "keyFeatures": zod.array(zod.string()),
+  "pros": zod.array(zod.string()),
+  "cons": zod.array(zod.string())
 })),
   "total": zod.number(),
   "page": zod.number(),
@@ -94,7 +97,10 @@ export const ListFeaturedToolsResponseItem = zod.object({
   "featured": zod.boolean(),
   "rating": zod.number(),
   "tags": zod.array(zod.string()),
-  "launchYear": zod.number().nullish()
+  "launchYear": zod.number().nullish(),
+  "keyFeatures": zod.array(zod.string()),
+  "pros": zod.array(zod.string()),
+  "cons": zod.array(zod.string())
 })
 export const ListFeaturedToolsResponse = zod.array(ListFeaturedToolsResponseItem)
 
@@ -120,7 +126,10 @@ export const GetToolResponse = zod.object({
   "featured": zod.boolean(),
   "rating": zod.number(),
   "tags": zod.array(zod.string()),
-  "launchYear": zod.number().nullish()
+  "launchYear": zod.number().nullish(),
+  "keyFeatures": zod.array(zod.string()),
+  "pros": zod.array(zod.string()),
+  "cons": zod.array(zod.string())
 })
 
 

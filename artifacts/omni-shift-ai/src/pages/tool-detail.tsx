@@ -10,7 +10,15 @@ import { ToolCard } from "@/components/tool-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, ExternalLink, Star, ArrowLeft } from "lucide-react";
+import {
+  ChevronRight,
+  ExternalLink,
+  Star,
+  ArrowLeft,
+  CheckCircle2,
+  ThumbsUp,
+  ThumbsDown,
+} from "lucide-react";
 
 export default function ToolDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -142,6 +150,60 @@ export default function ToolDetail() {
             <p className="text-muted-foreground leading-relaxed">
               {tool.longDescription}
             </p>
+          </div>
+        )}
+
+        {tool.keyFeatures.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold mb-4">Key Features</h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {tool.keyFeatures.map((feature) => (
+                <li
+                  key={feature}
+                  className="flex items-start gap-2.5 rounded-xl border border-border/50 bg-card px-4 py-3"
+                >
+                  <CheckCircle2 className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" />
+                  <span className="text-sm text-foreground/90">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {(tool.pros.length > 0 || tool.cons.length > 0) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
+            {tool.pros.length > 0 && (
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 p-5">
+                <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
+                  <ThumbsUp className="w-4 h-4" />
+                  Pros
+                </h2>
+                <ul className="space-y-2.5">
+                  {tool.pros.map((pro) => (
+                    <li key={pro} className="flex items-start gap-2 text-sm text-foreground/90">
+                      <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">+</span>
+                      {pro}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {tool.cons.length > 0 && (
+              <div className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-5">
+                <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-rose-700 dark:text-rose-400 uppercase tracking-wide">
+                  <ThumbsDown className="w-4 h-4" />
+                  Cons
+                </h2>
+                <ul className="space-y-2.5">
+                  {tool.cons.map((con) => (
+                    <li key={con} className="flex items-start gap-2 text-sm text-foreground/90">
+                      <span className="text-rose-600 dark:text-rose-400 mt-0.5">−</span>
+                      {con}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 

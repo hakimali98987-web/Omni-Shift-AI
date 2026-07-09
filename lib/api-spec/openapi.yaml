@@ -202,6 +202,9 @@ components:
         - featured
         - rating
         - tags
+        - keyFeatures
+        - pros
+        - cons
       properties:
         id:
           type: integer
@@ -233,6 +236,18 @@ components:
             type: string
         launchYear:
           type: ["integer", "null"]
+        keyFeatures:
+          type: array
+          items:
+            type: string
+        pros:
+          type: array
+          items:
+            type: string
+        cons:
+          type: array
+          items:
+            type: string
     ToolListResult:
       type: object
       required: [items, total, page, limit]

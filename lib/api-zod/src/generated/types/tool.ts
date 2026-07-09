@@ -24,4 +24,7 @@ export interface Tool {
   tags: string[];
   /** @nullable */
   launchYear?: number | null;
+  keyFeatures: string[];
+  pros: string[];
+  cons: string[];
 }

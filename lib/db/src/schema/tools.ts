@@ -27,6 +27,9 @@ export const toolsTable = pgTable("tools", {
   rating: doublePrecision("rating").notNull().default(0),
   tags: text("tags").array().notNull().default([]),
   launchYear: integer("launch_year"),
+  keyFeatures: text("key_features").array().notNull().default([]),
+  pros: text("pros").array().notNull().default([]),
+  cons: text("cons").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

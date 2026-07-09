@@ -26,6 +26,9 @@ const toolSelection = {
   rating: toolsTable.rating,
   tags: toolsTable.tags,
   launchYear: toolsTable.launchYear,
+  keyFeatures: toolsTable.keyFeatures,
+  pros: toolsTable.pros,
+  cons: toolsTable.cons,
   createdAt: toolsTable.createdAt,
 };
 
