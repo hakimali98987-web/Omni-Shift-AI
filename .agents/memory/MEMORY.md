@@ -1,0 +1,1 @@
+- [Artifacts missing from listArtifacts after import](artifact-reregistration.md) — re-run verifyAndReplaceArtifactToml on unchanged toml content to restore registry + workflows.

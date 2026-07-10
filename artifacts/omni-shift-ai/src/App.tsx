@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import NotFound from '@/pages/not-found';
 import NewTools from '@/pages/new-tools';
+import Categories from '@/pages/categories';
 import Blog from '@/pages/blog';
 import About from '@/pages/about';
 import Contact from '@/pages/contact';
@@ -31,6 +32,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/categories" component={Categories} />
       <Route path="/categories/:slug" component={CategoryDetail} />
       <Route path="/tools/:slug" component={ToolDetail} />
       <Route path="/new" component={NewTools} />
