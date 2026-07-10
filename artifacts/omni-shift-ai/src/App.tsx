@@ -6,6 +6,14 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import NotFound from '@/pages/not-found';
+import NewTools from '@/pages/new-tools';
+import Blog from '@/pages/blog';
+import About from '@/pages/about';
+import Contact from '@/pages/contact';
+import Privacy from '@/pages/privacy';
+import Terms from '@/pages/terms';
+import Favorites from '@/pages/favorites';
+import Bookmarks from '@/pages/bookmarks';
 import Home from '@/views/home';
 import CategoryDetail from '@/views/category-detail';
 import ToolDetail from '@/views/tool-detail';
@@ -25,6 +33,15 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/categories/:slug" component={CategoryDetail} />
       <Route path="/tools/:slug" component={ToolDetail} />
+      <Route path="/new" component={NewTools} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/cookies" component={Privacy} />
+      <Route path="/favorites" component={Favorites} />
+      <Route path="/bookmarks" component={Bookmarks} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -10,6 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { useFavorites, useBookmarks } from "@/hooks/use-local-collection";
+import {
   ChevronRight,
   ExternalLink,
   Star,
@@ -17,19 +24,54 @@ import {
   CheckCircle2,
   ThumbsUp,
   ThumbsDown,
+  Heart,
+  Bookmark,
+  ImageIcon,
+  HelpCircle,
 } from "lucide-react";
 
 export default function ToolDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data: tool, isLoading, isError } = useGetTool(slug ?? "");
   const [logoError, setLogoError] = useState(false);
+  const { has: isFavorited, toggle: toggleFavorite } = useFavorites();
+  const { has: isBookmarked, toggle: toggleBookmark } = useBookmarks();
 
-  const relatedParams = { category: tool?.categorySlug, limit: 4 };
+  const relatedParams = { category: tool?.categorySlug, limit: 7 };
   const { data: relatedData } = useListTools(relatedParams, {
     query: { queryKey: getListToolsQueryKey(relatedParams), enabled: !!tool },
   });
 
-  const relatedTools = relatedData?.items.filter((t) => t.slug !== slug).slice(0, 3);
+  const relatedTools = relatedData?.items.filter((t) => t.slug !== slug).slice(0, 6);
+
+  const faqs = tool
+    ? [
+        {
+          question: `Is ${tool.name} free to use?`,
+          answer:
+            tool.pricing === "Free"
+              ? `Yes — ${tool.name} is free to use.`
+              : tool.pricing === "Freemium"
+                ? `${tool.name} offers a free tier with paid plans available for more advanced usage.`
+                : `${tool.name} is a paid tool. Check its website for current pricing details.`,
+        },
+        {
+          question: `What category is ${tool.name} in?`,
+          answer: `${tool.name} is listed under ${tool.categoryName} on Omni Shift AI.`,
+        },
+        {
+          question: `Does ${tool.name} offer a free trial?`,
+          answer:
+            tool.pricing === "Paid"
+              ? `Many paid tools offer a trial period — check ${tool.name}'s official website for the latest offer.`
+              : `${tool.name} has a free tier you can use before considering any paid upgrade.`,
+        },
+        {
+          question: `How do I get started with ${tool.name}?`,
+          answer: `Click "Open Website" above to visit ${tool.name}'s official site and create an account to get started.`,
+        },
+      ]
+    : [];
 
   if (isLoading) {
     return (
@@ -129,12 +171,38 @@ export default function ToolDetail() {
             </div>
           </div>
 
-          <Button size="lg" className="rounded-full px-6 shrink-0" asChild>
-            <a href={tool.websiteUrl} target="_blank" rel="noopener noreferrer">
-              Open Website
-              <ExternalLink className="w-4 h-4 ml-1.5" />
-            </a>
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full px-4"
+              onClick={() => toggleFavorite(tool.slug)}
+              aria-pressed={isFavorited(tool.slug)}
+              aria-label={isFavorited(tool.slug) ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart
+                className={`w-4 h-4 ${isFavorited(tool.slug) ? "fill-rose-500 text-rose-500" : ""}`}
+              />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full px-4"
+              onClick={() => toggleBookmark(tool.slug)}
+              aria-pressed={isBookmarked(tool.slug)}
+              aria-label={isBookmarked(tool.slug) ? "Remove bookmark" : "Bookmark this tool"}
+            >
+              <Bookmark
+                className={`w-4 h-4 ${isBookmarked(tool.slug) ? "fill-violet-600 text-violet-600" : ""}`}
+              />
+            </Button>
+            <Button size="lg" className="rounded-full px-6" asChild>
+              <a href={tool.websiteUrl} target="_blank" rel="noopener noreferrer">
+                Open Website
+                <ExternalLink className="w-4 h-4 ml-1.5" />
+              </a>
+            </Button>
+          </div>
         </div>
 
         {tool.longDescription && (
@@ -215,10 +283,49 @@ export default function ToolDetail() {
           </div>
         )}
 
+        {/* Screenshots placeholder — no screenshot assets are available in the
+            data model yet, so this reserves the layout slot for future images. */}
+        <div className="mb-12">
+          <h2 className="flex items-center gap-2 text-xl font-semibold mb-4">
+            <ImageIcon className="w-5 h-5 text-muted-foreground" />
+            Screenshots
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[0, 1].map((i) => (
+              <div
+                key={i}
+                className="aspect-video rounded-xl border border-dashed border-border/70 bg-muted/40 flex flex-col items-center justify-center text-muted-foreground"
+              >
+                <ImageIcon className="w-8 h-8 mb-2 opacity-40" />
+                <span className="text-xs">Screenshot coming soon</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <h2 className="flex items-center gap-2 text-xl font-semibold mb-4">
+            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+            Frequently Asked Questions
+          </h2>
+          <Accordion type="single" collapsible className="rounded-xl border border-border/50 bg-card px-2">
+            {faqs.map((faq, i) => (
+              <AccordionItem key={faq.question} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-medium px-2">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="px-2 text-sm text-muted-foreground">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
         {relatedTools && relatedTools.length > 0 && (
           <div>
             <h2 className="text-xl font-semibold mb-6">
-              More in {tool.categoryName}
+              Related AI Tools
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {relatedTools.map((t) => (

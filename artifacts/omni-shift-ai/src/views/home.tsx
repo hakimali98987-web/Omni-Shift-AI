@@ -62,6 +62,11 @@ export default function Home() {
     const handle = setTimeout(() => {
       setSearch(searchInput);
       setPage(1);
+      if (searchInput.trim()) {
+        document
+          .getElementById("tools-grid")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }, 250);
     return () => clearTimeout(handle);
   }, [searchInput]);
@@ -92,10 +97,13 @@ export default function Home() {
 
   function handleSearchSubmit(e: React.FormEvent) {
     // Results already update live as the user types (debounced above);
-    // submitting just applies immediately, e.g. on Enter.
+    // submitting just applies immediately, e.g. on Enter or search-icon click.
     e.preventDefault();
     setSearch(searchInput);
     setPage(1);
+    document
+      .getElementById("tools-grid")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function selectCategory(slug: string | undefined) {
@@ -158,7 +166,13 @@ export default function Home() {
             className="max-w-2xl mx-auto mb-10"
           >
             <div className="relative flex items-center shadow-xl shadow-violet-100/50 dark:shadow-violet-950/30 rounded-2xl overflow-hidden border border-border/60 bg-background">
-              <Search className="absolute left-5 h-5 w-5 text-muted-foreground pointer-events-none shrink-0" />
+              <button
+                type="submit"
+                aria-label="Search"
+                className="absolute left-5 h-5 w-5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              >
+                <Search className="h-5 w-5" />
+              </button>
               <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
@@ -465,7 +479,7 @@ export default function Home() {
         {toolsData && toolsData.items.length === 0 && (
           <div className="text-center py-24 text-muted-foreground">
             <Search className="w-10 h-10 mx-auto mb-4 opacity-30" />
-            <p className="font-medium text-lg mb-1">No tools found</p>
+            <p className="font-medium text-lg mb-1">No AI tools found</p>
             <p className="text-sm">Try a different tool name, category, or tag.</p>
           </div>
         )}

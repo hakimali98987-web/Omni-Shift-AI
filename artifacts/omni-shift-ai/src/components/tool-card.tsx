@@ -3,7 +3,8 @@ import { Link } from "wouter";
 import { Tool } from "@workspace/api-client-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight, Heart, Star } from "lucide-react";
+import { useFavorites } from "@/hooks/use-local-collection";
 
 // @replit: badge tones chosen to meet WCAG AA (>=4.5:1) for text-xs on both light and dark surfaces
 const PRICING_STYLES: Record<string, string> = {
@@ -14,6 +15,8 @@ const PRICING_STYLES: Record<string, string> = {
 
 export function ToolCard({ tool }: { tool: Tool }) {
   const [logoError, setLogoError] = useState(false);
+  const { has, toggle } = useFavorites();
+  const favorited = has(tool.slug);
 
   return (
     // @replit: single primary interaction is the internal Link (wraps the whole card);
@@ -28,11 +31,25 @@ export function ToolCard({ tool }: { tool: Tool }) {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.07] via-transparent to-transparent opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/0 via-primary to-primary/0 scale-x-0 group-hover:scale-x-100 group-focus-within:scale-x-100 transition-transform duration-500 origin-center pointer-events-none" />
 
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggle(tool.slug);
+        }}
+        aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+        aria-pressed={favorited}
+        className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-background/80 backdrop-blur border border-border/60 flex items-center justify-center text-muted-foreground hover:text-rose-500 hover:border-rose-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Heart className={`w-4 h-4 ${favorited ? "fill-rose-500 text-rose-500" : ""}`} />
+      </button>
+
       <Link
         to={`/tools/${tool.slug}`}
         className="flex flex-col flex-grow p-5 pb-4 relative z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-4 pr-9">
           <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center overflow-hidden border border-border/50 shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:shadow-md">
             {tool.logoUrl && !logoError ? (
               <img
