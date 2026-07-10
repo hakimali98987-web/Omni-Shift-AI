@@ -5,3 +5,6 @@ externalPort = 80
 [[ports]]
 localPort = 21408
 externalPort = 3000
+
+[agent]
+expertMode = true
