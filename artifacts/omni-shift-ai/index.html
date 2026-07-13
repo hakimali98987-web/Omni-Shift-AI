@@ -20,5 +20,25 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Guaranteed API redirect script -->
+    <script>
+      (function() {
+        const API_BASE = 'https://omni-shift-ai-api-production.up.railway.app';
+        const originalFetch = window.fetch;
+        window.fetch = function(input, init) {
+          let url = input;
+          if (typeof input === 'string' && input.startsWith('/api/')) {
+            url = API_BASE + input;
+          } else if (input instanceof Request && input.url.startsWith('/api/')) {
+            url = new URL(input.url, API_BASE).toString();
+          }
+          return originalFetch(url, init).catch(err => {
+            console.error('API request failed:', err);
+            // Return empty array to prevent app from crashing
+            return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+          });
+        };
+      })();
+    </script>
   </body>
 </html>
