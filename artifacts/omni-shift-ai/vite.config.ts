@@ -37,6 +37,8 @@ export default defineConfig({
         '..',
         'attached_assets',
       ),
+      // 🔁 New alias to ensure Vite uses the source with hardcoded base URL
+      '@workspace/api-client-react': path.resolve(import.meta.dirname, '../../lib/api-client-react/src'),
     },
     dedupe: ['react', 'react-dom'],
   },
