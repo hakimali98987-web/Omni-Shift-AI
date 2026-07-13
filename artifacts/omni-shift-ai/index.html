@@ -20,7 +20,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Guaranteed API redirect script -->
+    <!-- Final safe API intercept with response patching -->
     <script>
       (function() {
         const API_BASE = 'https://omni-shift-ai-api-production.up.railway.app';
@@ -32,9 +32,27 @@
           } else if (input instanceof Request && input.url.startsWith('/api/')) {
             url = new URL(input.url, API_BASE).toString();
           }
-          return originalFetch(url, init).catch(err => {
+          return originalFetch(url, init).then(response => {
+            const clonedResponse = response.clone();
+            return clonedResponse.json().then(data => {
+              // Patch common fields to prevent toLocaleString errors
+              if (data && typeof data === 'object') {
+                if (data.totalTools === undefined) data.totalTools = 0;
+                if (data.featuredTools === undefined) data.featuredTools = 0;
+                if (data.totalCategories === undefined) data.totalCategories = 0;
+                if (data.recentTools === undefined) data.recentTools = [];
+                if (data.tools === undefined) data.tools = [];
+                if (data.pagination === undefined) data.pagination = { page: 1, limit: 10, total: 0, totalPages: 0 };
+              }
+              return new Response(JSON.stringify(data), {
+                status: response.status,
+                headers: { 'Content-Type': 'application/json' }
+              });
+            }).catch(() => {
+              return response;
+            });
+          }).catch(err => {
             console.error('API request failed:', err);
-            // Return empty array to prevent app from crashing
             return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
           });
         };
