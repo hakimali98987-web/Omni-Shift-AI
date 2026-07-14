@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { loginSchema } from "@/lib/validations/tool";
-import { verifyAdminCredentials, createSessionCookie } from "@/lib/auth";
+import { apiRequest } from "@/lib/api-client";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -9,20 +9,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter a valid email and password" }, { status: 400 });
   }
 
-  let valid: boolean;
   try {
-    valid = await verifyAdminCredentials(parsed.data.email, parsed.data.password);
+    const data = await apiRequest<{ token?: string; access_token?: string; ok?: boolean }>(
+      "/auth/login",
+      { method: "POST", body: parsed.data },
+    );
+
+    // The external API returns a JWT token — store it as a session cookie so
+    // subsequent requests can forward it as a Bearer token.
+    const token = data.token ?? data.access_token;
+    if (!token) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set("admin_api_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8, // 8 hours
+    });
+    return response;
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Admin auth is not configured" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : "Login failed" },
+      { status: 401 },
     );
   }
-
-  if (!valid) {
-    return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-  }
-
-  await createSessionCookie({ email: parsed.data.email });
-  return NextResponse.json({ ok: true });
 }

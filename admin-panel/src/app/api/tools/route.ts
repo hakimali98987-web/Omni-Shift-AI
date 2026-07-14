@@ -1,37 +1,28 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
-import { listTools, createTool, isSlugTaken } from "@/lib/data/tools";
+import { cookies } from "next/headers";
+import { apiRequest } from "@/lib/api-client";
 import { toolInputSchema } from "@/lib/validations/tool";
 
-// GET is intentionally public-readable-once-authenticated only (this is an
-// admin surface, not the public directory API), matching the rest of the
-// panel's session gating.
-export async function GET() {
-  const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+async function getToken(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get("admin_api_token")?.value;
+}
 
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase is not configured yet. See .env.example." }, { status: 503 });
-  }
+export async function GET() {
+  const token = await getToken();
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const tools = await listTools();
-    return NextResponse.json({ tools });
+    const data = await apiRequest<{ tools: unknown[] }>("/tools", { token });
+    return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
 
-// POST is also covered by middleware (writes require a valid session), this
-// check is defense-in-depth in case the route is ever reached directly.
 export async function POST(request: Request) {
-  const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase is not configured yet. See .env.example." }, { status: 503 });
-  }
+  const token = await getToken();
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   const parsed = toolInputSchema.safeParse(body);
@@ -40,11 +31,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (await isSlugTaken(parsed.data.slug)) {
-      return NextResponse.json({ error: "That slug is already in use" }, { status: 409 });
-    }
-    const tool = await createTool(parsed.data);
-    return NextResponse.json({ tool }, { status: 201 });
+    const data = await apiRequest<{ tool: unknown }>("/tools", {
+      method: "POST",
+      body: parsed.data,
+      token,
+    });
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }

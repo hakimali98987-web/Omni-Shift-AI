@@ -1,74 +1,66 @@
 import "server-only";
-import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import { mapToolRow, toolInputToRow, type ToolRow } from "@/lib/data/mapper";
+import { cookies } from "next/headers";
+import { apiRequest } from "@/lib/api-client";
 import type { Tool, ToolInput } from "@/lib/types";
 
-const TOOL_SELECT = "*, categories ( slug, name )";
+async function getToken(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get("admin_api_token")?.value;
+}
 
 export async function listTools(): Promise<Tool[]> {
-  const supabase = getSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("tools")
-    .select(TOOL_SELECT)
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(`Failed to list tools: ${error.message}`);
-  return (data as unknown as ToolRow[]).map(mapToolRow);
+  const token = await getToken();
+  const data = await apiRequest<{ tools: Tool[] }>("/tools", { token });
+  return data.tools;
 }
 
 export async function getToolById(id: string): Promise<Tool | null> {
-  const supabase = getSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("tools")
-    .select(TOOL_SELECT)
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw new Error(`Failed to fetch tool: ${error.message}`);
-  return data ? mapToolRow(data as unknown as ToolRow) : null;
+  const token = await getToken();
+  try {
+    const data = await apiRequest<{ tool: Tool }>(`/tools/${id}`, { token });
+    return data.tool ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function isSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
-  const supabase = getSupabaseAdminClient();
-  let query = supabase.from("tools").select("id").eq("slug", slug);
-  if (excludeId) query = query.neq("id", excludeId);
-  const { data, error } = await query.maybeSingle();
-  if (error) throw new Error(`Failed to check slug: ${error.message}`);
-  return Boolean(data);
+  const token = await getToken();
+  try {
+    const params = new URLSearchParams({ slug });
+    if (excludeId) params.set("excludeId", excludeId);
+    const data = await apiRequest<{ taken: boolean }>(`/tools/slug-check?${params.toString()}`, { token });
+    return data.taken ?? false;
+  } catch {
+    return false;
+  }
 }
 
 export async function createTool(input: ToolInput): Promise<Tool> {
-  const supabase = getSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("tools")
-    .insert(toolInputToRow(input))
-    .select(TOOL_SELECT)
-    .single();
-
-  if (error) throw new Error(`Failed to create tool: ${error.message}`);
-  return mapToolRow(data as unknown as ToolRow);
+  const token = await getToken();
+  const data = await apiRequest<{ tool: Tool }>("/tools", {
+    method: "POST",
+    body: input,
+    token,
+  });
+  return data.tool;
 }
 
 export async function updateTool(id: string, input: ToolInput): Promise<Tool | null> {
-  const supabase = getSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("tools")
-    .update(toolInputToRow(input))
-    .eq("id", id)
-    .select(TOOL_SELECT)
-    .maybeSingle();
-
-  if (error) throw new Error(`Failed to update tool: ${error.message}`);
-  return data ? mapToolRow(data as unknown as ToolRow) : null;
+  const token = await getToken();
+  const data = await apiRequest<{ tool: Tool }>(`/tools/${id}`, {
+    method: "PATCH",
+    body: input,
+    token,
+  });
+  return data.tool ?? null;
 }
 
 export async function deleteTool(id: string): Promise<boolean> {
-  const supabase = getSupabaseAdminClient();
-  const { error, count } = await supabase
-    .from("tools")
-    .delete({ count: "exact" })
-    .eq("id", id);
-
-  if (error) throw new Error(`Failed to delete tool: ${error.message}`);
-  return (count ?? 0) > 0;
+  const token = await getToken();
+  await apiRequest<{ ok: boolean }>(`/tools/${id}`, {
+    method: "DELETE",
+    token,
+  });
+  return true;
 }
