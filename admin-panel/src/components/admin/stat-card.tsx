@@ -7,7 +7,7 @@ export function StatCard({
   icon: Icon,
 }: {
   label: string;
-  value: number;
+  value: number | undefined;
   icon: LucideIcon;
 }) {
   return (
@@ -15,7 +15,7 @@ export function StatCard({
       <CardContent className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="mt-1 text-3xl font-bold text-foreground">{value.toLocaleString()}</p>
+          <p className="mt-1 text-3xl font-bold text-foreground">{(value ?? 0).toLocaleString()}</p>
         </div>
         <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
           <Icon className="h-5 w-5" />
