@@ -140,7 +140,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/50 px-4 py-1.5 text-sm font-medium text-violet-700 dark:text-violet-300 mb-8 shadow-sm">
             <Sparkles className="w-3.5 h-3.5" />
             {stats
-              ? `${stats.totalTools}+ AI tools and counting`
+              ? `${stats?.totalTools ?? 0}+ AI tools and counting`
               : "The AI tools directory"}
           </div>
 
@@ -221,10 +221,10 @@ export default function Home() {
           {/* Stats row */}
           {stats && (
             <div className="flex flex-wrap justify-center gap-x-10 gap-y-4 mt-4">
-              <StatBadge label="AI Tools" value={stats.totalTools} icon={<TrendingUp className="w-3.5 h-3.5" />} />
-              <StatBadge label="Categories" value={stats.totalCategories} icon={<Sparkles className="w-3.5 h-3.5" />} />
-              <StatBadge label="Free Tools" value={stats.freeTools} icon={<Star className="w-3.5 h-3.5" />} />
-              <StatBadge label="Freemium" value={stats.freemiumTools} icon={<Star className="w-3.5 h-3.5" />} />
+              <StatBadge label="AI Tools" value={stats?.totalTools} icon={<TrendingUp className="w-3.5 h-3.5" />} />
+              <StatBadge label="Categories" value={stats?.totalCategories} icon={<Sparkles className="w-3.5 h-3.5" />} />
+              <StatBadge label="Free Tools" value={stats?.freeTools} icon={<Star className="w-3.5 h-3.5" />} />
+              <StatBadge label="Freemium" value={stats?.freemiumTools} icon={<Star className="w-3.5 h-3.5" />} />
             </div>
           )}
         </div>
@@ -548,14 +548,14 @@ function StatBadge({
   icon,
 }: {
   label: string;
-  value: number;
+  value: number | undefined;
   icon: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2 text-center">
       <div className="flex items-center gap-1.5 bg-muted/60 border border-border/50 rounded-full px-4 py-2">
         <span className="text-muted-foreground">{icon}</span>
-        <span className="font-bold text-foreground">{value.toLocaleString()}</span>
+        <span className="font-bold text-foreground">{(value ?? 0).toLocaleString()}</span>
         <span className="text-sm text-muted-foreground">{label}</span>
       </div>
     </div>
