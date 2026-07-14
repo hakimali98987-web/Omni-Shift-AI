@@ -1,11 +1,25 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { cookies } from "next/headers";
 import { Sidebar } from "@/components/admin/sidebar";
 import { Topbar } from "@/components/admin/topbar";
+import type { AdminSession } from "@/lib/types";
+
+/** Decode the email claim from a JWT without signature verification (display only). */
+function decodeTokenEmail(token: string): string {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+    return payload.email ?? payload.sub ?? "Admin";
+  } catch {
+    return "Admin";
+  }
+}
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_api_token")?.value;
+  if (!token) redirect("/login");
+
+  const session: AdminSession = { email: decodeTokenEmail(token) };
 
   return (
     <div className="flex min-h-screen bg-background">

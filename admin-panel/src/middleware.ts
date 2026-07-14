@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { hasValidSession } from "@/lib/auth-edge";
 
-const SESSION_COOKIE = "admin_session";
+const API_TOKEN_COOKIE = "admin_api_token";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
-  const authed = await hasValidSession(token, process.env.SESSION_SECRET);
+  const token = request.cookies.get(API_TOKEN_COOKIE)?.value;
+  const authed = Boolean(token);
 
   const { pathname } = request.nextUrl;
   const isLoginPage = pathname === "/login";

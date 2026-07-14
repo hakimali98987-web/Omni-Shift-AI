@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export default async function RootPage() {
-  const session = await getSession();
-  redirect(session ? "/dashboard" : "/login");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_api_token")?.value;
+  redirect(token ? "/dashboard" : "/login");
 }

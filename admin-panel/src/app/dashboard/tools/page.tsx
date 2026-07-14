@@ -3,11 +3,16 @@ import { Plus, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolsTable } from "./tools-table";
 import { listTools } from "@/lib/data/tools";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
 
 export default async function ToolsPage() {
-  const configured = isSupabaseConfigured();
-  const tools = configured ? await listTools().catch(() => null) : null;
+  let tools = null;
+  let loadError: string | null = null;
+
+  try {
+    tools = await listTools();
+  } catch (error) {
+    loadError = error instanceof Error ? error.message : "Failed to load tools";
+  }
 
   return (
     <div className="space-y-6">
@@ -24,18 +29,10 @@ export default async function ToolsPage() {
         </Link>
       </div>
 
-      {!configured && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+      {loadError && (
+        <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
-          <p className="text-sm">
-            Connect Supabase (see <code>.env.example</code>) to load and manage tools.
-          </p>
-        </div>
-      )}
-
-      {configured && tools === null && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          Could not load tools from Supabase. Check your credentials and that the schema has been applied.
+          <p>{loadError}</p>
         </div>
       )}
 

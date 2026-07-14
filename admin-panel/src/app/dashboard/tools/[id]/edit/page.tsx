@@ -4,11 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { ToolForm } from "../../tool-form";
 import { getToolById } from "@/lib/data/tools";
 import { listCategories } from "@/lib/data/categories";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
 
 export default async function EditToolPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!isSupabaseConfigured()) notFound();
-
   const { id } = await params;
   const [tool, categories] = await Promise.all([getToolById(id), listCategories()]);
   if (!tool) notFound();
