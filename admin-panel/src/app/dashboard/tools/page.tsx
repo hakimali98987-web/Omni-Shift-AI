@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Plus, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToolsTable } from "./tools-table";
@@ -11,7 +12,12 @@ export default async function ToolsPage() {
   try {
     tools = await listTools();
   } catch (error) {
-    loadError = error instanceof Error ? error.message : "Failed to load tools";
+    const msg = error instanceof Error ? error.message : "Failed to load tools";
+    // If the external API rejects with an auth error, send the user back to login.
+    if (/no token|unauthorized|invalid token/i.test(msg)) {
+      redirect("/login?next=/dashboard/tools");
+    }
+    loadError = msg;
   }
 
   return (
