@@ -5,6 +5,8 @@
   "description": "Standalone Next.js 15 App Router admin panel for Omni Shift AI. Not part of the Replit pnpm workspace — run and deploy independently.",
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
+    "preview": "next build && next start",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

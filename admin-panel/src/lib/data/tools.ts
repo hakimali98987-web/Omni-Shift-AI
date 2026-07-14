@@ -3,9 +3,13 @@ import { cookies } from "next/headers";
 import { apiRequest } from "@/lib/api-client";
 import type { Tool, ToolInput } from "@/lib/types";
 
-async function getToken(): Promise<string | undefined> {
+async function getToken(): Promise<string> {
   const cookieStore = await cookies();
-  return cookieStore.get("admin_api_token")?.value;
+  const token = cookieStore.get("admin_api_token")?.value;
+  if (!token) {
+    throw new Error("No token — please log in again.");
+  }
+  return token;
 }
 
 export async function listTools(): Promise<Tool[]> {

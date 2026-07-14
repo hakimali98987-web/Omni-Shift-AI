@@ -9,11 +9,13 @@
 const getBaseUrl = (): string => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
+    // Provide a clear runtime error instead of a cryptic network failure.
     throw new Error(
-      "NEXT_PUBLIC_API_URL is not set. Add it to your environment variables.",
+      "NEXT_PUBLIC_API_URL is not configured. " +
+      "Set it to your Railway API base URL, e.g. https://omni-shift-ai-api-production.up.railway.app",
     );
   }
-  // Strip any trailing slash before appending the fixed suffix
+  // Strip any trailing slash before appending the fixed suffix.
   return apiUrl.replace(/\/$/, "") + "/api/admin";
 };
 
