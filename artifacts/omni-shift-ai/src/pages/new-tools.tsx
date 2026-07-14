@@ -24,10 +24,10 @@ export default function NewTools() {
           Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-60 rounded-2xl" />
           ))}
-        {data?.items.map((tool) => <ToolCard key={tool.id} tool={tool} />)}
+        {(data?.items ?? []).map((tool) => <ToolCard key={tool.id} tool={tool} />)}
       </div>
 
-      {data && data.items.length === 0 && (
+      {data && (data.items ?? []).length === 0 && (
         <div className="text-center py-24 text-muted-foreground">
           <p className="font-medium text-lg mb-1">No new tools yet</p>
           <p className="text-sm">Check back soon for the latest additions.</p>
