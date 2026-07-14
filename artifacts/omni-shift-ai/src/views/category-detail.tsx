@@ -137,12 +137,12 @@ export default function CategoryDetail() {
             Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i} className="h-56 rounded-xl" />
             ))}
-          {toolsData?.items.map((tool) => (
+          {(toolsData?.items ?? []).map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
         </div>
 
-        {toolsData && toolsData.items.length === 0 && (
+        {toolsData && (toolsData.items ?? []).length === 0 && (
           <div className="text-center py-20 text-muted-foreground">
             No tools in this category match your filters yet.
           </div>

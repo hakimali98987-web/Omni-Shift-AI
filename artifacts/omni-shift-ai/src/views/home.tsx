@@ -329,7 +329,7 @@ export default function Home() {
               Array.from({ length: 8 }).map((_, i) => (
                 <Skeleton key={i} className="h-60 rounded-2xl" />
               ))}
-            {featured?.slice(0, 8).map((tool) => (
+            {(Array.isArray(featured) ? featured : []).slice(0, 8).map((tool) => (
               <ToolCard key={tool.id} tool={tool} />
             ))}
           </div>
@@ -378,7 +378,7 @@ export default function Home() {
             Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i} className="h-60 rounded-2xl" />
             ))}
-          {trendingData?.items.slice(0, 8).map((tool) => (
+          {(trendingData?.items ?? []).slice(0, 8).map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
         </div>
@@ -471,12 +471,12 @@ export default function Home() {
             Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i} className="h-60 rounded-2xl" />
             ))}
-          {toolsData?.items.map((tool) => (
+          {(toolsData?.items ?? []).map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
         </div>
 
-        {toolsData && toolsData.items.length === 0 && (
+        {toolsData && (toolsData.items ?? []).length === 0 && (
           <div className="text-center py-24 text-muted-foreground">
             <Search className="w-10 h-10 mx-auto mb-4 opacity-30" />
             <p className="font-medium text-lg mb-1">No AI tools found</p>
