@@ -42,7 +42,7 @@ export default function ToolDetail() {
     query: { queryKey: getListToolsQueryKey(relatedParams), enabled: !!tool },
   });
 
-  const relatedTools = relatedData?.items.filter((t) => t.slug !== slug).slice(0, 6);
+  const relatedTools = (relatedData?.items ?? []).filter((t) => t.slug !== slug).slice(0, 6);
 
   const faqs = tool
     ? [
@@ -214,11 +214,11 @@ export default function ToolDetail() {
           </div>
         )}
 
-        {tool.keyFeatures.length > 0 && (
+        {(tool.keyFeatures ?? []).length > 0 && (
           <div className="mb-12">
             <h2 className="text-xl font-semibold mb-4">Key Features</h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {tool.keyFeatures.map((feature) => (
+              {(tool.keyFeatures ?? []).map((feature) => (
                 <li
                   key={feature}
                   className="flex items-start gap-2.5 rounded-xl border border-border/50 bg-card px-4 py-3"
@@ -231,16 +231,16 @@ export default function ToolDetail() {
           </div>
         )}
 
-        {(tool.pros.length > 0 || tool.cons.length > 0) && (
+        {((tool.pros ?? []).length > 0 || (tool.cons ?? []).length > 0) && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
-            {tool.pros.length > 0 && (
+            {(tool.pros ?? []).length > 0 && (
               <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 p-5">
                 <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
                   <ThumbsUp className="w-4 h-4" />
                   Pros
                 </h2>
                 <ul className="space-y-2.5">
-                  {tool.pros.map((pro) => (
+                  {(tool.pros ?? []).map((pro) => (
                     <li key={pro} className="flex items-start gap-2 text-sm text-foreground/90">
                       <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">+</span>
                       {pro}
@@ -249,14 +249,14 @@ export default function ToolDetail() {
                 </ul>
               </div>
             )}
-            {tool.cons.length > 0 && (
+            {(tool.cons ?? []).length > 0 && (
               <div className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-5">
                 <h2 className="flex items-center gap-2 text-sm font-semibold mb-4 text-rose-700 dark:text-rose-400 uppercase tracking-wide">
                   <ThumbsDown className="w-4 h-4" />
                   Cons
                 </h2>
                 <ul className="space-y-2.5">
-                  {tool.cons.map((con) => (
+                  {(tool.cons ?? []).map((con) => (
                     <li key={con} className="flex items-start gap-2 text-sm text-foreground/90">
                       <span className="text-rose-600 dark:text-rose-400 mt-0.5">−</span>
                       {con}
@@ -268,13 +268,13 @@ export default function ToolDetail() {
           </div>
         )}
 
-        {tool.tags.length > 0 && (
+        {(tool.tags ?? []).length > 0 && (
           <div className="mb-12">
             <h2 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
               Tags
             </h2>
             <div className="flex flex-wrap gap-2">
-              {tool.tags.map((tag) => (
+              {(tool.tags ?? []).map((tag) => (
                 <Badge key={tag} variant="outline" className="rounded-full">
                   {tag}
                 </Badge>
