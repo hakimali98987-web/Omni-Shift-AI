@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -64,6 +65,7 @@ export function ToolForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(tool));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   function set<K extends keyof ToolInput>(key: K, value: ToolInput[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -72,23 +74,41 @@ export function ToolForm({
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+    setSuccess(null);
     setSubmitting(true);
 
     try {
-      const url = tool ? `/api/tools/${tool.id}` : "/api/tools";
+      // Ensure the id has no extra path segments (guard against "/46/edit" style values)
+      const safeId = tool?.id?.toString().split("/")[0];
+      const url = tool ? `/api/tools/${safeId}` : "/api/tools";
       const method = tool ? "PATCH" : "POST";
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
+
+      let data: Record<string, unknown> = {};
+      try {
+        data = await res.json();
+      } catch {
+        // non-JSON response
+      }
+
       if (!res.ok) {
-        setError(data.error ?? "Failed to save tool");
+        setError((data.error as string) ?? `Request failed (${res.status})`);
         return;
       }
-      router.push("/dashboard/tools");
-      router.refresh();
+
+      setSuccess(tool ? "Tool updated successfully." : "Tool created successfully.");
+      // Brief delay so the user can see the success banner, then navigate away
+      setTimeout(() => {
+        router.push("/dashboard/tools");
+        router.refresh();
+      }, 800);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unexpected error");
     } finally {
       setSubmitting(false);
     }
@@ -253,7 +273,19 @@ export function ToolForm({
         </CardContent>
       </Card>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {success && (
+        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          {success}
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <XCircle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={() => router.push("/dashboard/tools")}>

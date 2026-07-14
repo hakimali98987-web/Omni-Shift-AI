@@ -19,9 +19,11 @@ export async function listTools(): Promise<Tool[]> {
 }
 
 export async function getToolById(id: string): Promise<Tool | null> {
+  // Strip any accidental path suffix (e.g. "46/edit" → "46")
+  const safeId = id.split("/")[0];
   const token = await getToken();
   try {
-    const data = await apiRequest<{ tool: Tool }>(`/tools/${id}`, { token });
+    const data = await apiRequest<{ tool: Tool }>(`/tools/${safeId}`, { token });
     return data.tool ?? null;
   } catch {
     return null;
