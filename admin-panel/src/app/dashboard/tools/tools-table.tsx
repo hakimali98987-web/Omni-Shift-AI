@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import type { Tool } from "@/lib/types";
 
 export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
@@ -18,6 +19,7 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
   const [pendingDelete, setPendingDelete] = useState<Tool | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -29,6 +31,38 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
         (tool.categoryName ?? "").toLowerCase().includes(term),
     );
   }, [tools, search]);
+
+  async function handleToggleFeatured(tool: Tool) {
+    // Optimistic update
+    setTools((prev) =>
+      prev.map((t) => (t.id === tool.id ? { ...t, featured: !t.featured } : t)),
+    );
+    setTogglingIds((prev) => new Set(prev).add(tool.id));
+
+    try {
+      const res = await fetch(`/api/tools/${tool.id}/toggle-featured`, { method: "PATCH" });
+      if (!res.ok) {
+        // Roll back on failure
+        setTools((prev) =>
+          prev.map((t) => (t.id === tool.id ? { ...t, featured: tool.featured } : t)),
+        );
+        const data = await res.json().catch(() => ({}));
+        setError((data as { error?: string }).error ?? "Failed to toggle featured status");
+      }
+    } catch {
+      // Roll back on network error
+      setTools((prev) =>
+        prev.map((t) => (t.id === tool.id ? { ...t, featured: tool.featured } : t)),
+      );
+      setError("Network error — could not toggle featured status");
+    } finally {
+      setTogglingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(tool.id);
+        return next;
+      });
+    }
+  }
 
   async function handleDelete() {
     if (!pendingDelete) return;
@@ -61,6 +95,15 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
         />
       </div>
 
+      {error && !pendingDelete && (
+        <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError(null)} className="ml-4 font-medium underline">
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-xl border border-card-border bg-card">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-secondary/50 text-xs uppercase text-muted-foreground">
@@ -68,6 +111,7 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
               <th className="px-4 py-3 font-medium">Tool</th>
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Pricing</th>
+              <th className="px-4 py-3 font-medium">Featured</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium text-right">Actions</th>
             </tr>
@@ -95,6 +139,14 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
                 <td className="px-4 py-3 text-muted-foreground">{tool.categoryName ?? "—"}</td>
                 <td className="px-4 py-3">
                   <Badge variant="outline">{tool.pricing}</Badge>
+                </td>
+                <td className="px-4 py-3">
+                  <Switch
+                    id={`featured-${tool.id}`}
+                    checked={tool.featured}
+                    onChange={() => handleToggleFeatured(tool)}
+                    aria-label={`Toggle featured for ${tool.name}`}
+                  />
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1.5">
@@ -131,7 +183,7 @@ export function ToolsTable({ initialTools }: { initialTools: Tool[] }) {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                   No tools found.
                 </td>
               </tr>

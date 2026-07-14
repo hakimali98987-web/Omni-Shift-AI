@@ -13,7 +13,7 @@ export const toolInputSchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens only"),
   logoUrl: z.string().url("Must be a valid URL").or(z.literal("")),
   description: z.string().min(1, "Short description is required").max(280),
-  fullDescription: z.string().min(1, "Full description is required"),
+  fullDescription: z.string().default(""),
   categoryId: z.string().uuid("Select a category"),
   pricing: z.enum(["Free", "Freemium", "Paid"]),
   websiteUrl: z.string().url("Must be a valid URL"),
