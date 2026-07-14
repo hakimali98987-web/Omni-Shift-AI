@@ -37,14 +37,14 @@ export function useSavedTools(ids: string[]) {
       try {
         while (remaining.size > 0) {
           const result = await listTools({ page, limit, sort: 'name' });
-          for (const tool of result.items) {
+          for (const tool of (result.items ?? [])) {
             if (remaining.has(tool.slug)) {
               found.push(tool);
               remaining.delete(tool.slug);
             }
           }
           const fetchedSoFar = page * limit;
-          if (fetchedSoFar >= result.total || result.items.length === 0) break;
+          if (fetchedSoFar >= result.total || (result.items ?? []).length === 0) break;
           page += 1;
         }
         if (!cancelled) {
